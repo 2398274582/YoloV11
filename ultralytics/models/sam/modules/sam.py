@@ -617,7 +617,6 @@ class SAM2Model(torch.nn.Module):
 
     def _prepare_backbone_features(self, backbone_out):
         """Prepares and flattens visual features from the image backbone output for further processing."""
-        backbone_out = backbone_out.copy()
         assert len(backbone_out["backbone_fpn"]) == len(backbone_out["vision_pos_enc"])
         assert len(backbone_out["backbone_fpn"]) >= self.num_feature_levels
 
@@ -1023,6 +1022,10 @@ class SAM2Model(torch.nn.Module):
         # don't overlap (here sigmoid(-10.0)=4.5398e-05)
         pred_masks = torch.where(keep, pred_masks, torch.clamp(pred_masks, max=-10.0))
         return pred_masks
+
+    def set_binarize(self, binarize=False):
+        """Set binarize for VideoPredictor."""
+        self.binarize_mask_from_pts_for_mem_enc = binarize
 
     def set_imgsz(self, imgsz):
         """
